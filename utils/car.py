@@ -7,32 +7,46 @@ class Car:
         self.ride = None
         self.is_riding = False
 
+        self.expected_start = None
+        self.expected_finish = None
+
+    @property
+    def is_free(self):
+        return self.ride is None
+
     def add_ride(self, ride):
         self.ride = ride
 
-    def remove_ride(self):
-        self.ride = None
+        self.expected_start = self.distance_to_start(ride)
+        self.expected_finish = self.total_ride_distance(ride)
 
-    def step(self):
+        self.location = self.ride.start
+
+    def start_ride(self):
+        self.is_riding = True
+        self.location = self.ride.end
+
+    def finish_ride(self):
+        self.ride = None
+        self.is_riding = False
+
+        self.expected_start = None
+        self.expected_finish = None
+
+    def check_ride_finished(self, time_step):
         if not self.ride:
             return
-        
-        if self.is_riding:
-            self.__step_to(self.ride.end)
-        else:
-            self.__step_to(self.ride.start)
 
-    def __step_to(self, coord):
-        (x0, y0), (x1, y1) = self.location, coord
-        dx, dy = x1 - x0, y1 - y0
+        if self.expected_finish <= time_step:
+            self.finish_ride()
 
-        if dx != 0:
-            self.location = x0 + (dx // abs(dx)), y0
-        elif dy != 0:
-            self.location = x0, y0 + (dy // abs(dy))
+    def distance_to_start(self, ride):
+        return self.manhatten(self.location, ride.start)
+
+    def total_ride_distance(self, ride):
+        distance_to_start = self.distance_to_start(ride)
+        return distance_to_start + ride.distance        
 
     def can_finish(self, ride, time_step):
-        distance_to_start = self.manhatten(self.location, ride.start)
-        total_distance = distance_to_start + ride.distance
-
+        total_distance = self.total_ride_distance(ride)
         return time_step + total_distance <= ride.latest_finish

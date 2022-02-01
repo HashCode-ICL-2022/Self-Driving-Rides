@@ -72,8 +72,13 @@ def car_by_car(fname, verbose=True):
     closemap = build_close_map(False, rides=rides, N=N)
 
     # Init array storing done rides
-    done_rides = np.full(len(rides), False)
-    intmap = np.arange(len(rides))
+    done_rides = np.full(len(rides) + 1, False)
+    intmap = np.arange(len(rides) + 1)
+
+    # Append start loc to rides
+    # print(rides)
+    rides = np.vstack([rides, np.array([0, 0, 0, 0, 0, T])])
+    # print(rides)
 
     # track (useful dist, between dist) for each car
     car_stats = np.zeros((F, 2))
@@ -88,7 +93,7 @@ def car_by_car(fname, verbose=True):
 
     for car_id in crange:
         if not verbose:
-            crange.set_description(f"Car {car_id}, Score {total_score}")
+            crange.set_description(f"Car {car_id}, Score {total_score:,}")
 
         if verbose: print(f"Doing Car {car_id}")
 
@@ -106,6 +111,10 @@ def car_by_car(fname, verbose=True):
             mask_out_done = np.isin(close, done_rides * intmap, invert=True)
             undone_close = close[mask_out_done]
 
+            if not len(undone_close):
+                ran_out = True
+                break
+
             # Pick the closest ride that can be completed
             found_doable_ride = False
             pick_next = 0
@@ -116,8 +125,16 @@ def car_by_car(fname, verbose=True):
                                 rides[next_considered_id][si])
 
                 # If we have time to get to the considered ride, and also do it
-                if r_len + goto_len <= T - total_dist:
+                # if r_len + goto_len <= T - total_dist:
+                if r_len + goto_len <= rides[next_considered_id][
+                        5] - total_dist and total_score + goto_len >= rides[
+                            next_considered_id][4]:
                     found_doable_ride = True
+
+                    if verbose:
+                        print(
+                            f"    Going to {next_considered_id} (cur: {current_loc_id})"
+                        )
 
                     # Add to done rides
                     done_rides[current_loc_id] = True
@@ -126,7 +143,11 @@ def car_by_car(fname, verbose=True):
                     current_loc_id = next_considered_id
                     total_dist += r_len + goto_len
                     car_stats[car_id] += [r_len, goto_len]
-                    total_score += r_len
+
+                    # Calc start time bonus
+                    bonus = B if total_dist + goto_len == rides[
+                        next_considered_id][4] else 0
+                    total_score += r_len + bonus
 
                 else:
                     pick_next += 1
@@ -143,12 +164,15 @@ def car_by_car(fname, verbose=True):
         if verbose: print(f"Done (useful, goto) = {car_stats[car_id]}")
 
     print(f"All carstats (usefuls, gotos) {np.sum(car_stats, axis=0)}")
-    
+    print(f"Ride done percentage {np.sum(done_rides)*100/len(done_rides)}")
+    print(f"Final Score {total_score:,}")
 
 
 if __name__ == "__main__":
-    fname = "data/c_no_hurry.in"
+    # fname = "data/c_no_hurry.in"
     # fname = "data/a_example.in"
-    # fname = "data/b_should_be_easy.in"
+    fname = "data/b_should_be_easy.in"
+    # fname = "data/d_metropolis.in"
+    # fname = "data/e_high_bonus.in"
 
     car_by_car(fname, verbose=False)

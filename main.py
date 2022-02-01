@@ -19,13 +19,11 @@ def main(fname):
             finished, ride = car.check_ride_finished(t)
             if car.is_free:
                 if finished and ride.finished_on_time:
-                    count += 1
                     total_score += score([ride], B)
                 if len(rides) > 0:
                     car.add_ride(rides.pop(), t)
 
-    print(count)
-    print(total_score)
+    print(f"{total_score:,}")
 
 
 if __name__ == "__main__":

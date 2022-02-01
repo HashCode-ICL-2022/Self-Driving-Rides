@@ -11,10 +11,13 @@ def main(fname):
     t = 0
     total_score = 0
     count = 0
+    free_count = 0 
     while t < T:
         for car in cars:
+            count += 1
             finished, ride = car.check_ride_finished(t)
             if car.is_free:
+                free_count += 1
                 if finished:
                     count += 1
                     total_score += score([ride], B)
@@ -22,7 +25,7 @@ def main(fname):
                     car.add_ride(rides.pop(), t)
         t += 1
 
-    print(count)
+    print(free_count/count)
     print(total_score)
 
 

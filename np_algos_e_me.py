@@ -23,7 +23,7 @@ def get_dist_array(X, Y):
     return np.sum(np.abs(X - Y), axis=1)
 
 
-def build_close_map(fname, rides=None, N=None):
+def build_close_map(fname, rides=None, N=None, alpha=0.1):
     # Ride: a, b, x, y, s, f
     if fname:
         [R, C, F, N, B, T], rides = read(fname)
@@ -32,6 +32,7 @@ def build_close_map(fname, rides=None, N=None):
     si = [0, 1]
     ei = [2, 3]
     dists = get_dist_array(rides[:, si], rides[:, ei])
+    expirymap = rides[:, 5]
 
     # For each ride (index), find closest N start points and store in closemap
     closemap = {i: [] for i in range(N)}
@@ -39,7 +40,7 @@ def build_close_map(fname, rides=None, N=None):
     # Closest rides from the start node
     dist_to_start = get_dist_array(rides[:, si], np.array([0, 0]))
     # Gives ride ids of closest rides to start node
-    closest = np.argsort(dist_to_start)
+    closest = np.argsort(dist_to_start + alpha*expirymap)
 
     # Stores ride ids of sorted rides (from start point) in key [-1]
     closemap[-1] = closest
@@ -51,7 +52,7 @@ def build_close_map(fname, rides=None, N=None):
     for i, ride in pbar:
 
         dist_to_ends = get_dist_array(rides[:, si], ride[ei])
-        closest = np.argsort(dist_to_ends)
+        closest = np.argsort(dist_to_ends + alpha*expirymap)
         closemap[i] = closest
 
     return closemap
@@ -61,7 +62,7 @@ def dist(a, b):
     return np.sum(np.abs(a - b))
 
 
-def car_by_car(fname, verbose=True):
+def car_by_car(fname, alpha=0.1, verbose=True):
     # Selectors for the start and end coordinates
     si = [0, 1]
     ei = [2, 3]
@@ -73,7 +74,7 @@ def car_by_car(fname, verbose=True):
     ride_lengths = get_dist_array(rides[:, si], rides[:, ei])
 
     # Get closemap
-    closemap = build_close_map(False, rides=rides, N=N)
+    closemap = build_close_map(False, rides=rides, N=N, alpha=alpha)
 
     # Init array storing done rides
     done_rides = np.full(len(rides) + 1, False)
@@ -191,7 +192,8 @@ if __name__ == "__main__":
 
     import argparse 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--fname', '-f', default='b')
+    parser.add_argument('--fname', '-f', default='e')
+    parser.add_argument('--alpha', '-a', default=0.1)
     args = parser.parse_args()
     fname_dict = {
         "a" : "data/a_example.in",
@@ -200,5 +202,5 @@ if __name__ == "__main__":
         "d" : "data/d_metropolis.in",
         "e" : "data/e_high_bonus.in",
     }
-    logs = car_by_car(fname_dict[args.fname], verbose=False)
+    logs = car_by_car(fname_dict[args.fname], alpha=args.alpha, verbose=False)
     car_log_to_file(logs, f'{args.fname}.txt')

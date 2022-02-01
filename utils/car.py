@@ -30,3 +30,9 @@ class Car:
             self.location = x0 + (dx // abs(dx)), y0
         elif dy != 0:
             self.location = x0, y0 + (dy // abs(dy))
+
+    def can_finish(self, ride, time_step):
+        distance_to_start = self.manhatten(self.location, ride.start)
+        total_distance = distance_to_start + ride.distance
+
+        return time_step + total_distance <= ride.latest_finish

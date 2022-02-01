@@ -12,6 +12,8 @@ class Ride:
 
         self.reward = self.distance + bonus
 
+        self.on_time = False
+
     def manhatten(self, start, end):
         (x0, y0), (x1, y1) = start, end
         return abs(x1 - x0) + abs(y1 - y0)

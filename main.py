@@ -8,6 +8,7 @@ def main(fname):
     t = 0
     total_score = 0
     while t < T:
+        print(t/T)
         for car in cars:
             finished, ride = car.check_ride_finished(t)
             if car.is_free:
@@ -21,7 +22,7 @@ def main(fname):
 
 
 if __name__ == "__main__":
-    main("data/b_should_be_easy.in")
+    main("c_no_hurry.in")
 
 
 

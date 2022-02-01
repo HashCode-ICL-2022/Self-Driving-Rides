@@ -29,13 +29,19 @@ class Car:
         self.location = self.ride.end
 
     def finish_ride(self):
+        self.ride.mark_as_done()
         self.prev_rides.append(self.ride.id)
+
+        finished_ride = self.ride
 
         self.ride = None
         self.is_riding = False
 
         self.expected_start = None
         self.expected_finish = None
+
+        return finished_ride
+
 
     def check_ride_finished(self, step):
         if not self.ride:
@@ -44,10 +50,11 @@ class Car:
         if not self.is_riding and self.expected_start <= step:
             self.start_ride()
             return False, None
+
         elif self.is_riding and self.expected_finish <= step:
-            old_ride = self.ride
-            self.finish_ride()
-            return True, old_ride
+            finished_ride = self.finish_ride()
+            return True, finished_ride
+            
         return False, None
 
     def manhatten(self, start, end):

@@ -39,12 +39,16 @@ class Car:
 
     def check_ride_finished(self, step):
         if not self.ride:
-            return
+            return False, None
 
         if not self.is_riding and self.expected_start <= step:
             self.start_ride()
+            return False, None
         elif self.is_riding and self.expected_finish <= step:
+            old_ride = self.ride
             self.finish_ride()
+            return True, old_ride
+        return False, None
 
     def manhatten(self, start, end):
         (x0, y0), (x1, y1) = start, end

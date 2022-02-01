@@ -1,7 +1,7 @@
 def score(rides, B):
     score = 0
     for ride in rides:
-        if ride.finished:
+        if ride.done:
             score += ride.distance
             if ride.on_time:
                 score += B
@@ -29,12 +29,6 @@ def nearest_ride(car, rides, T):
                 closest_ride = ride
                 closest_dist = dist
     return closest_ride
-
-
-def ride_sort(rides):
-    """ Sort lowest to highest: ride.latest_finish + ride.end[0] + ride.end[1]
-    """
-    rides.sort(reverse=True|False, key=myFunc)
 
 
 

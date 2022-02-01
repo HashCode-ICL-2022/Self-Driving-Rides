@@ -42,6 +42,10 @@ class Car:
         elif self.is_riding and self.expected_finish <= step:
             self.finish_ride()
 
+    def manhatten(self, start, end):
+        (x0, y0), (x1, y1) = start, end
+        return abs(x1 - x0) + abs(y1 - y0)
+
     def distance_to_start(self, ride):
         return self.manhatten(self.location, ride.start)
 

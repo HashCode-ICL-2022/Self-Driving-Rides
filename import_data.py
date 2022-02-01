@@ -10,5 +10,5 @@ def import_data(filename):
         for i in range(N):
             tmp = f.readline().rstrip()
             [start1, start2, end1, end2, earliest_start, latest_finish] = [int for i in tmp.split(' ')]
-            rides += Ride((start1, start2), (end1, end2), earliest_start, latest_finish)
+            rides += Ride((start1, start2), (end1, end2), earliest_start, latest_finish, i)
     return [R, C, F, N, B, T, rides]

@@ -19,6 +19,9 @@ class Car:
     def add_ride(self, ride, step):
         self.ride = ride
 
+        if step == self.ride.earliest_start:
+            self.ride.on_time = True
+
         self.expected_start = step + self.distance_to_start(ride)
         self.expected_finish = step + self.total_ride_distance(ride)
 

@@ -16,11 +16,11 @@ class Car:
     def is_free(self):
         return self.ride is None
 
-    def add_ride(self, ride):
+    def add_ride(self, ride, step):
         self.ride = ride
 
-        self.expected_start = self.distance_to_start(ride)
-        self.expected_finish = self.total_ride_distance(ride)
+        self.expected_start = step + self.distance_to_start(ride)
+        self.expected_finish = step + self.total_ride_distance(ride)
 
         self.location = self.ride.start
 
@@ -28,8 +28,8 @@ class Car:
         self.is_riding = True
         self.location = self.ride.end
 
-    def finish_ride(self):
-        self.ride.mark_as_done()
+    def finish_ride(self, step):
+        self.ride.mark_as_done(step)
         self.prev_rides.append(self.ride.id)
 
         finished_ride = self.ride
@@ -52,7 +52,7 @@ class Car:
             return False, None
 
         elif self.is_riding and self.expected_finish <= step:
-            finished_ride = self.finish_ride()
+            finished_ride = self.finish_ride(step)
             return True, finished_ride
             
         return False, None

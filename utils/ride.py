@@ -7,6 +7,8 @@ class Ride:
         self.earliest_start = earliest_start
         self.latest_finish = latest_finish
 
+        self.id = id
+
         self.distance = self.manhatten(start, end)
         self.reward = self.distance
 

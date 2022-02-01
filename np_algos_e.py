@@ -32,26 +32,23 @@ def build_close_map(fname, rides=None, N=None):
     si = [0, 1]
     ei = [2, 3]
     dists = get_dist_array(rides[:, si], rides[:, ei])
+    expirymap = rides[:, 5]
 
     # For each ride (index), find closest N start points and store in closemap
     closemap = {i: [] for i in range(N)}
 
     # Closest rides from the start node
     dist_to_start = get_dist_array(rides[:, si], np.array([0, 0]))
-    # Gives ride ids of closest rides to start node
-    closest = np.argsort(dist_to_start)
+    closest = np.argsort(dist_to_start + expirymap * 0.05)
 
-    # Stores ride ids of sorted rides (from start point) in key [-1]
     closemap[-1] = closest
-    
 
-    # Stores ride ids of sorted rides from ride (id i) in key[i]
     pbar = tqdm(enumerate(rides))
     pbar.set_description("Building Closemap")
     for i, ride in pbar:
 
         dist_to_ends = get_dist_array(rides[:, si], ride[ei])
-        closest = np.argsort(dist_to_ends)
+        closest = np.argsort(dist_to_ends + expirymap)
         closemap[i] = closest
 
     return closemap
@@ -85,7 +82,7 @@ def car_by_car(fname, verbose=True):
     # print(rides)
 
     # track (useful dist, between dist) for each car
-    car_stats = np.zeros((F, 2))
+    car_stats = np.zeros((F, 3))
     all_car_logs = []
 
     # Run each car
@@ -95,12 +92,15 @@ def car_by_car(fname, verbose=True):
         crange = tqdm(range(F))
 
     total_score = 0
+    bonuses_earned = 0
 
     for car_id in crange:
         car_log = []
 
         if not verbose:
-            crange.set_description(f"Car {car_id}, Score {total_score:,}")
+            crange.set_description(
+                f"Car {car_id}, Score {total_score:,}, Rides Done: {round(np.sum(done_rides)*100/len(done_rides), 2)}%, Bonuses Earned: {bonuses_earned}"
+            )
 
         if verbose: print(f"Doing Car {car_id}")
 
@@ -115,7 +115,6 @@ def car_by_car(fname, verbose=True):
             # print(f"Done rides: {done_rides}")
             # print(f"Intmap: {intmap}")
 
-            # Mask out the done rides for this car
             mask_out_done = np.isin(close, done_rides * intmap, invert=True)
             undone_close = close[mask_out_done]
 
@@ -134,8 +133,10 @@ def car_by_car(fname, verbose=True):
 
                 # If we have time to get to the considered ride, and also do it
                 # if r_len + goto_len <= T - total_dist:
-                if r_len + goto_len <= rides[next_considered_id][
-                        5] - total_dist and total_dist + goto_len >= rides[
+                wait_len = rides[next_considered_id][4] - (total_dist +
+                                                           goto_len)
+                if r_len + goto_len + wait_len <= rides[next_considered_id][
+                        5] - total_dist and total_dist + goto_len <= rides[
                             next_considered_id][4]:
                     found_doable_ride = True
 
@@ -150,13 +151,14 @@ def car_by_car(fname, verbose=True):
                     # Log the move
                     car_log += [next_considered_id]
                     current_loc_id = next_considered_id
-                    total_dist += r_len + goto_len
-                    car_stats[car_id] += [r_len, goto_len]
+                    total_dist += r_len + goto_len + wait_len
+                    car_stats[car_id] += [r_len, goto_len, wait_len]
 
                     # Calc start time bonus
-                    bonus = B if total_dist + goto_len == rides[
-                        next_considered_id][4] else 0
+                    bonus = B  # if total_dist + goto_len + wait_len == rides[
+                    # next_considered_id][4] else 0
                     total_score += r_len + bonus
+                    if bonus: bonuses_earned += 1
 
                 else:
                     pick_next += 1
@@ -189,17 +191,11 @@ def car_log_to_file(car_logs, name):
 
 
 if __name__ == "__main__":
+    # fname = "data/c_no_hurry.in"
+    # fname = "data/a_example.in"
+    # fname = "data/b_should_be_easy.in"
+    # fname = "data/d_metropolis.in"
+    fname = "data/e_high_bonus.in"
 
-    import argparse 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--fname', '-f', default='b')
-    args = parser.parse_args()
-    fname_dict = {
-        "a" : "data/a_example.in",
-        "b" : "data/b_should_be_easy.in",
-        "c" : "data/c_no_hurry.in",
-        "d" : "data/d_metropolis.in",
-        "e" : "data/e_high_bonus.in",
-    }
-    logs = car_by_car(fname_dict[args.fname], verbose=False)
-    car_log_to_file(logs, f'{args.fname}.txt')
+    logs = car_by_car(fname, verbose=False)
+    car_log_to_file(logs, 'E.out')

@@ -10,7 +10,7 @@ class Car:
         self.expected_start = None
         self.expected_finish = None
 
-        self.prev_rides = []
+        self.prev_rides = list()
 
     @property
     def is_free(self):
@@ -29,7 +29,7 @@ class Car:
         self.location = self.ride.end
 
     def finish_ride(self):
-        self.prev_rides += self.ride.id
+        self.prev_rides.append(self.ride.id)
 
         self.ride = None
         self.is_riding = False

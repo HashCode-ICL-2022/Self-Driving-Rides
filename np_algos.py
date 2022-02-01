@@ -38,10 +38,14 @@ def build_close_map(fname, rides=None, N=None):
 
     # Closest rides from the start node
     dist_to_start = get_dist_array(rides[:, si], np.array([0, 0]))
+    # Gives ride ids of closest rides to start node
     closest = np.argsort(dist_to_start)
 
+    # Stores ride ids of sorted rides (from start point) in key [-1]
     closemap[-1] = closest
+    
 
+    # Stores ride ids of sorted rides from ride (id i) in key[i]
     pbar = tqdm(enumerate(rides))
     pbar.set_description("Building Closemap")
     for i, ride in pbar:
@@ -103,6 +107,7 @@ def car_by_car(fname, verbose=True):
             # print(f"Done rides: {done_rides}")
             # print(f"Intmap: {intmap}")
 
+            # Mask out the done rides for this car
             mask_out_done = np.isin(close, done_rides * intmap, invert=True)
             undone_close = close[mask_out_done]
 

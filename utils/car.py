@@ -27,7 +27,8 @@ class Car:
 
         self.location = self.ride.start
 
-    def start_ride(self):
+    def start_ride(self, step):
+        self.ride.mark_as_started(step)
         self.is_riding = True
         self.location = self.ride.end
 
@@ -51,7 +52,7 @@ class Car:
             return False, None
 
         if not self.is_riding and self.expected_start <= step:
-            self.start_ride()
+            self.start_ride(step)
             return False, None
 
         elif self.is_riding and self.expected_finish <= step:

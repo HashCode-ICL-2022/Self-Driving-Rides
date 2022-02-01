@@ -2,6 +2,8 @@ from ast import arg
 from utils.utils import score
 from utils.parse import import_data
 
+from tqdm import tqdm
+
 import argparse
 
 def main(fname):
@@ -11,16 +13,16 @@ def main(fname):
     t = 0
     total_score = 0
     count = 0
-    while t < T:
+
+    for t in tqdm(range(T)):
         for car in cars:
             finished, ride = car.check_ride_finished(t)
             if car.is_free:
-                if finished:
+                if finished and ride.finished_on_time:
                     count += 1
                     total_score += score([ride], B)
                 if len(rides) > 0:
                     car.add_ride(rides.pop(), t)
-        t += 1
 
     print(count)
     print(total_score)

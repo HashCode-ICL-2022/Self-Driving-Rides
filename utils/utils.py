@@ -1,9 +1,11 @@
 def score(rides, B):
     total_score = 0
     for ride in rides:
-        if ride.done:
+        if ride.finished_on_time:
+            
             total_score += ride.distance
-            if ride.on_time:
+            
+            if ride.started_on_time:
                 total_score += B
 
     return total_score

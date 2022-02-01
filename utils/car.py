@@ -33,11 +33,13 @@ class Car:
         self.expected_start = None
         self.expected_finish = None
 
-    def check_ride_finished(self, time_step):
+    def check_ride_finished(self, step):
         if not self.ride:
             return
 
-        if self.expected_finish <= time_step:
+        if not self.is_riding and self.expected_start <= step:
+            self.start_ride()
+        elif self.is_riding and self.expected_finish <= step:
             self.finish_ride()
 
     def distance_to_start(self, ride):
@@ -47,6 +49,6 @@ class Car:
         distance_to_start = self.distance_to_start(ride)
         return distance_to_start + ride.distance        
 
-    def can_finish(self, ride, time_step):
+    def can_finish(self, ride, step):
         total_distance = self.total_ride_distance(ride)
-        return time_step + total_distance <= ride.latest_finish
+        return step + total_distance <= ride.latest_finish

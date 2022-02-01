@@ -23,7 +23,7 @@ def nearest_ride(car, rides, T):
     closest_ride = None
     closest_dist = float("inf")
     for ride in rides:
-        if can_finish(T, ride):
+        if car.can_finish(ride, T):
             dist = distance_to_ride(car.location, ride)
             if dist < closest_dist:
                 closest_ride = ride

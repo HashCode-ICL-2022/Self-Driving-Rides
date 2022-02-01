@@ -13,10 +13,6 @@ def can_finish(T, ride):
     return T <= ride.latest_time
 
 
-def can_finish(T, ride):
-
-
-
 def distance_to_ride(location, ride):
     x, y = location
     ride_x, ride_y = ride.start

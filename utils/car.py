@@ -10,6 +10,8 @@ class Car:
         self.expected_start = None
         self.expected_finish = None
 
+        self.prev_rides = []
+
     @property
     def is_free(self):
         return self.ride is None
@@ -27,6 +29,8 @@ class Car:
         self.location = self.ride.end
 
     def finish_ride(self):
+        self.prev_rides += self.ride.id
+
         self.ride = None
         self.is_riding = False
 
@@ -51,7 +55,7 @@ class Car:
 
     def total_ride_distance(self, ride):
         distance_to_start = self.distance_to_start(ride)
-        return distance_to_start + ride.distance        
+        return distance_to_start + ride.distance
 
     def can_finish(self, ride, step):
         total_distance = self.total_ride_distance(ride)

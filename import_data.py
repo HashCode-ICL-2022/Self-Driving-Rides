@@ -1,4 +1,4 @@
-from ride import Ride
+from utils.ride import Ride
 
 
 def import_data(filename):

@@ -27,3 +27,6 @@ class Car:
         dx, dy = x1 - x0, y1 - y0
 
         if dx != 0:
+            self.location = x0 + (dx // abs(dx)), y0
+        elif dy != 0:
+            self.location = x0, y0 + (dy // abs(dy))

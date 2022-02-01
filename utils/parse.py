@@ -1,4 +1,5 @@
 from .ride import Ride
+from .car import Car 
 
 def import_data(filename):
     with open(f"data/{filename}", 'r') as f:
@@ -14,7 +15,11 @@ def import_data(filename):
         [x0, y0, x1, y1, es, lf] = list(map(int, ride.strip().split(' ')))
         rides.append(Ride((x0, y0), (x1, y1), es, lf, i))
     
-    return [R, C, F, N, B, T, rides]
+    cars = []
+    for i in range(F):
+        cars.append(Car(i))
+
+    return [R, C, F, N, B, T, rides, cars]
 
 
 def export_data(filename, cars):

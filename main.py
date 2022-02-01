@@ -1,5 +1,5 @@
-from import_data import import_data
 from utils.utils import score
+from utils.parse import import_data
 
 def main(fname):
 

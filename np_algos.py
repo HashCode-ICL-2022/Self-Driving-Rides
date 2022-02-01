@@ -130,7 +130,7 @@ def car_by_car(fname, verbose=True):
                 # If we have time to get to the considered ride, and also do it
                 # if r_len + goto_len <= T - total_dist:
                 if r_len + goto_len <= rides[next_considered_id][
-                        5] - total_dist and total_score + goto_len >= rides[
+                        5] - total_dist and total_dist + goto_len >= rides[
                             next_considered_id][4]:
                     found_doable_ride = True
 
@@ -179,7 +179,8 @@ def car_by_car(fname, verbose=True):
 def car_log_to_file(car_logs, name):
     with open("outputs/" + name, 'w') as file:
         for log in car_logs:
-            file.write(' '.join([str(i) for i in log]) + '\n')
+            file.write(
+                str(len(log)) + " " + ' '.join([str(i) for i in log]) + '\n')
 
 
 if __name__ == "__main__":
@@ -190,4 +191,4 @@ if __name__ == "__main__":
     # fname = "data/e_high_bonus.in"
 
     logs = car_by_car(fname, verbose=False)
-    car_log_to_file(logs, 'A')
+    car_log_to_file(logs, 'A.out')

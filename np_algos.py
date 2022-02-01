@@ -82,6 +82,7 @@ def car_by_car(fname, verbose=True):
 
     # track (useful dist, between dist) for each car
     car_stats = np.zeros((F, 2))
+    all_car_logs = []
 
     # Run each car
     if verbose:
@@ -92,6 +93,8 @@ def car_by_car(fname, verbose=True):
     total_score = 0
 
     for car_id in crange:
+        car_log = []
+
         if not verbose:
             crange.set_description(f"Car {car_id}, Score {total_score:,}")
 
@@ -140,6 +143,7 @@ def car_by_car(fname, verbose=True):
                     done_rides[current_loc_id] = True
 
                     # Log the move
+                    car_log += [next_considered_id]
                     current_loc_id = next_considered_id
                     total_dist += r_len + goto_len
                     car_stats[car_id] += [r_len, goto_len]
@@ -163,16 +167,27 @@ def car_by_car(fname, verbose=True):
 
         if verbose: print(f"Done (useful, goto) = {car_stats[car_id]}")
 
+        all_car_logs += [car_log]
+
     print(f"All carstats (usefuls, gotos) {np.sum(car_stats, axis=0)}")
     print(f"Ride done percentage {np.sum(done_rides)*100/len(done_rides)}")
     print(f"Final Score {total_score:,}")
 
+    return all_car_logs
+
+
+def car_log_to_file(car_logs, name):
+    with open("outputs/" + name, 'w') as file:
+        for log in car_logs:
+            file.write(' '.join([str(i) for i in log]) + '\n')
+
 
 if __name__ == "__main__":
     # fname = "data/c_no_hurry.in"
-    # fname = "data/a_example.in"
-    fname = "data/b_should_be_easy.in"
+    fname = "data/a_example.in"
+    # fname = "data/b_should_be_easy.in"
     # fname = "data/d_metropolis.in"
     # fname = "data/e_high_bonus.in"
 
-    car_by_car(fname, verbose=False)
+    logs = car_by_car(fname, verbose=False)
+    car_log_to_file(logs, 'A')

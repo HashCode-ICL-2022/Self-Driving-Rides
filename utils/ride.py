@@ -30,3 +30,9 @@ class Ride:
 
         if step <= self.latest_finish:
             self.finished_on_time = True
+    
+    def time_to_start(self, t):
+        time = self.earliest_start - t
+        if t > self.latest_finish:
+            return float("inf")
+        return time

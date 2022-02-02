@@ -191,11 +191,18 @@ def car_log_to_file(car_logs, name):
 
 
 if __name__ == "__main__":
-    # fname = "data/c_no_hurry.in"
-    # fname = "data/a_example.in"
-    # fname = "data/b_should_be_easy.in"
-    # fname = "data/d_metropolis.in"
-    fname = "data/e_high_bonus.in"
 
-    logs = car_by_car(fname, verbose=False)
-    car_log_to_file(logs, 'E.out')
+    import argparse 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--fname', '-f', default='e')
+    parser.add_argument('--alpha', '-a', default=0.1)
+    args = parser.parse_args()
+    fname_dict = {
+        "a" : "data/a_example.in",
+        "b" : "data/b_should_be_easy.in",
+        "c" : "data/c_no_hurry.in",
+        "d" : "data/d_metropolis.in",
+        "e" : "data/e_high_bonus.in",
+    }
+    logs = car_by_car(fname_dict[args.fname], alpha=args.alpha, verbose=False)
+    car_log_to_file(logs, f'{args.fname}.txt')

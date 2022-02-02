@@ -12,6 +12,8 @@ class Ride:
         self.distance = self.manhatten(start, end)
         self.reward = self.distance
 
+        self.latest_start = self.latest_finish - self.distance
+
         self.done = False
 
         self.started_on_time = False
@@ -32,7 +34,4 @@ class Ride:
             self.finished_on_time = True
     
     def time_to_start(self, t):
-        time = self.earliest_start - t
-        if t > self.latest_finish:
-            return float("inf")
-        return time
+        return max(self.earliest_start - t, 0)

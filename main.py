@@ -35,6 +35,7 @@ def main(fname):
     total_score = 0
     count = 0
 
+
     for t in tqdm(range(T)):
         for car in cars:
             count += 1
@@ -43,18 +44,17 @@ def main(fname):
                 if finished and ride.finished_on_time:
                     total_score += score([ride], B)
                 if len(rides) > 0:
-                    add_ride, rides = select_best_ride(rides, t)
-                    car.add_ride(add_ride, t)
+                    greedy_ride, rides = select_greedy_ride(car, rides, t)
+                    car.add_ride(greedy_ride, t)
                     
     print(f"{total_score:,}")
 
 
-def select_best_ride(rides, t):
+def select_greedy_ride(car, rides, t):
 
-    rides.sort(key=lambda x: x.time_to_start(t))
-    add_ride = rides.pop(0)
-
-    return add_ride, rides
+    rides.sort(key=lambda x: x.time_to_start(car.distance_to_start(x) + t))
+    greedy_ride = rides.pop(0)
+    return greedy_ride, rides
 
 
 
